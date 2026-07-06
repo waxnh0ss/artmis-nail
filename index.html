@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+
+<html lang="fa">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Artmis Nail Pro</title>
+
+<style>
+
+body{
+
+font-family:tahoma;
+
+background: linear-gradient(135deg,#ffe4f1,#ffd6ec,#fff0f7);
+
+text-align:center;
+
+padding:20px;
+
+}
+
+h1{color:#d1006c;}
+
+.box{
+
+background:#fff;
+
+padding:15px;
+
+margin:10px auto;
+
+border-radius:15px;
+
+max-width:450px;
+
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+
+}
+
+input,select{
+
+width:90%;
+
+padding:10px;
+
+margin:5px 0;
+
+border-radius:10px;
+
+border:1px solid #ddd;
+
+}
+
+button{
+
+padding:10px 20px;
+
+border:none;
+
+border-radius:10px;
+
+background:#ff4fa3;
+
+color:#fff;
+
+font-weight:bold;
+
+cursor:pointer;
+
+margin-top:10px;
+
+}
+
+table{
+
+width:100%;
+
+margin-top:10px;
+
+border-collapse:collapse;
+
+}
+
+td,th{
+
+border:1px solid #ddd;
+
+padding:5px;
+
+font-size:12px;
+
+}
+
+.admin{
+
+display:none;
+
+}
+
+.small{
+
+font-size:12px;
+
+color:#666;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>💅 Artmis Nail</h1>
+
+<p>تکنسین: فاطمه مرادقلی</p>
+
+<!-- رزرو مشتری -->
+
+<div class="box">
+
+<h3>📅 رزرو وقت</h3>
+
+<input id="name" placeholder="نام">
+
+<input id="phone" placeholder="شماره">
+
+<input id="date" type="date">
+
+<input id="time" type="time">
+
+<select id="service">
+
+<option>کاشت ناخن</option>
+
+<option>ترمیم</option>
+
+<option>ژلیش</option>
+
+<option>طراحی</option>
+
+</select>
+
+<button onclick="book()">ثبت رزرو</button>
+
+<p class="small">💖 ساعت‌های رزرو شده دوباره قابل انتخاب نیست</p>
+
+</div>
+
+<!-- ورود مدیریت -->
+
+<div class="box">
+
+<h3>🔐 ورود تکنسین</h3>
+
+<input id="pass" type="password" placeholder="رمز پنل">
+
+<button onclick="login()">ورود</button>
+
+</div>
+
+<!-- پنل مدیریت -->
+
+<div id="admin" class="box admin">
+
+<h3>📋 پنل مدیریت رزروها</h3>
+
+<button onclick="load()">نمایش رزروها</button>
+
+<table id="table"></table>
+
+</div>
+
+<script>
+
+// دیتابیس محلی
+
+function getData(){
+
+return JSON.parse(localStorage.getItem("bookings") || "[]");
+
+}
+
+function saveData(data){
+
+localStorage.setItem("bookings", JSON.stringify(data));
+
+}
+
+// جلوگیری از تکرار ساعت
+
+function isTimeTaken(date,time){
+
+let data = getData();
+
+return data.some(b => b.date === date && b.time === time);
+
+}
+
+// رزرو
+
+function book(){
+
+let name = document.getElementById("name").value;
+
+let phone = document.getElementById("phone").value;
+
+let date = document.getElementById("date").value;
+
+let time = document.getElementById("time").value;
+
+let service = document.getElementById("service").value;
+
+if(isTimeTaken(date,time)){
+
+alert("❌ این ساعت قبلاً رزرو شده");
+
+return;
+
+}
+
+let data = getData();
+
+data.push({name,phone,date,time,service});
+
+saveData(data);
+
+alert("💖 رزرو با موفقیت ثبت شد");
+
+}
+
+// ورود
+
+function login(){
+
+let pass = document.getElementById("pass").value;
+
+if(pass === "1234"){
+
+document.getElementById("admin").style.display = "block";
+
+alert("خوش آمدی 💅");
+
+}else{
+
+alert("رمز اشتباه ❌");
+
+}
+
+}
+
+// نمایش + حذف
+
+function load(){
+
+let data = getData();
+
+let table = `<tr>
+
+<th>نام</th>
+
+<th>شماره</th>
+
+<th>تاریخ</th>
+
+<th>ساعت</th>
+
+<th>خدمت</th>
+
+<th>حذف</th>
+
+</tr>`;
+
+data.forEach((b,i)=>{
+
+table += `
+
+<tr>
+
+<td>${b.name}</td>
+
+<td>${b.phone}</td>
+
+<td>${b.date}</td>
+
+<td>${b.time}</td>
+
+<td>${b.service}</td>
+
+<td><button onclick="del(${i})">❌</button></td>
+
+</tr>`;
+
+});
+
+document.getElementById("table").innerHTML = table;
+
+}
+
+// حذف رزرو
+
+function del(i){
+
+let data = getData();
+
+data.splice(i,1);
+
+saveData(data);
+
+load();
+
+}
+
+</script>
+
+</body>
+
+</html>
